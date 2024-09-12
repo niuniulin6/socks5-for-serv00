@@ -41,6 +41,8 @@ else
     (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
     # 如果 crontab 中不存在定时启动 Socks5 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
+    # 添加 keepalive.sh 的重启任务
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") | crontab -
     # 添加 keepalive.sh 的定时任务
     (crontab -l | grep -F "* * ${CRON_KEEPALIVE}") || (crontab -l; echo "*/12 * * * * ${CRON_KEEPALIVE}") | crontab -
   elif [ -e "${WORKDIR}/start.sh" ]; then
@@ -49,6 +51,8 @@ else
     (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_NEZHA} && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_NEZHA} && ${CRON_KEEPALIVE}") | crontab -
     # 如果 crontab 中不存在定时启动 Nezha Agent 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
+    # 添加 keepalive.sh 的重启任务
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") | crontab -
     # 添加 keepalive.sh 的定时任务
     (crontab -l | grep -F "* * ${CRON_KEEPALIVE}") || (crontab -l; echo "*/12 * * * * ${CRON_KEEPALIVE}") | crontab -
   elif [ -e "${FILE_PATH}/config.json" ]; then
@@ -57,6 +61,8 @@ else
     (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_KEEPALIVE}") | crontab -
     # 如果 crontab 中不存在定时启动 Socks5 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
+    # 添加 keepalive.sh 的重启任务
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") | crontab -
     # 添加 keepalive.sh 的定时任务
     (crontab -l | grep -F "* * ${CRON_KEEPALIVE}") || (crontab -l; echo "*/12 * * * * ${CRON_KEEPALIVE}") | crontab -
   fi
