@@ -24,6 +24,13 @@ REBOOT_COMMAND="@reboot pkill -kill -u $(whoami) && $PM2_PATH resurrect >> /home
 
 echo "检查并添加 crontab 任务"
 
+# 独立运行 keepalive.sh
+echo "运行 keepalive.sh"
+nohup ${KEEPALIVE_PATH} >/dev/null 2>&1 &
+
+# 等待 keepalive.sh 运行完成
+sleep 10  # 可以根据实际需要调整等待时间
+
 # 检查是否安装了 pm2
 if [ "$(command -v pm2)" == "/home/${USER}/.npm-global/bin/pm2" ]; then
   echo "已安装 pm2，并返回正确路径，启用 pm2 保活任务"
@@ -36,34 +43,22 @@ else
   if [ -e "${WORKDIR}/start.sh" ] && [ -e "${FILE_PATH}/config.json" ]; then
     echo "添加 nezha & socks5 的 crontab 重启任务"
     # 如果 crontab 中不存在重启 Nezha Agent、Socks5 和 keepalive.sh 的任务，则添加
-    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_NEZHA} && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_NEZHA} && ${CRON_KEEPALIVE}") | crontab -
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_NEZHA}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_NEZHA}") | crontab -
     # 如果 crontab 中不存在定时启动 Nezha Agent 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
     # 如果 crontab 中不存在定时启动 Socks5 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
-    # 添加 keepalive.sh 的重启任务
-    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") | crontab -
-    # 添加 keepalive.sh 的定时任务
-    (crontab -l | grep -F "* * ${CRON_KEEPALIVE}") || (crontab -l; echo "*/12 * * * * ${CRON_KEEPALIVE}") | crontab -
   elif [ -e "${WORKDIR}/start.sh" ]; then
     echo "添加 nezha 的 crontab 重启任务"
-    # 如果 crontab 中不存在重启 Nezha Agent 和 keepalive.sh 的任务，则添加
-    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_NEZHA} && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_NEZHA} && ${CRON_KEEPALIVE}") | crontab -
+    # 如果 crontab 中不存在重启 Nezha Agent 的任务，则添加
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_NEZHA}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_NEZHA}") | crontab -
     # 如果 crontab 中不存在定时启动 Nezha Agent 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") || (crontab -l; echo "*/12 * * * * pgrep -x \"nezha-agent\" > /dev/null || ${CRON_NEZHA}") | crontab -
-    # 添加 keepalive.sh 的重启任务
-    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") | crontab -
-    # 添加 keepalive.sh 的定时任务
-    (crontab -l | grep -F "* * ${CRON_KEEPALIVE}") || (crontab -l; echo "*/12 * * * * ${CRON_KEEPALIVE}") | crontab -
   elif [ -e "${FILE_PATH}/config.json" ]; then
     echo "添加 socks5 的 crontab 重启任务"
-    # 如果 crontab 中不存在重启 Socks5 和 keepalive.sh 的任务，则添加
-    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5} && ${CRON_KEEPALIVE}") | crontab -
+    # 如果 crontab 中不存在重启 Socks5 的任务，则添加
+    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_S5}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_S5}") | crontab -
     # 如果 crontab 中不存在定时启动 Socks5 的任务，则添加
     (crontab -l | grep -F "* * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") || (crontab -l; echo "*/12 * * * * pgrep -x \"s5\" > /dev/null || ${CRON_S5}") | crontab -
-    # 添加 keepalive.sh 的重启任务
-    (crontab -l | grep -F "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") || (crontab -l; echo "@reboot pkill -kill -u $(whoami) && ${CRON_KEEPALIVE}") | crontab -
-    # 添加 keepalive.sh 的定时任务
-    (crontab -l | grep -F "* * ${CRON_KEEPALIVE}") || (crontab -l; echo "*/12 * * * * ${CRON_KEEPALIVE}") | crontab -
   fi
 fi
